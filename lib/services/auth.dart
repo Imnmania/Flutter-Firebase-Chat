@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_firebase_2/helperFunctions/sharedpref_helper.dart';
+import 'package:flutter_chat_firebase_2/services/database.dart';
+import 'package:flutter_chat_firebase_2/views/home_page.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthMethods {
@@ -35,6 +37,21 @@ class AuthMethods {
       SharedPreferenceHelper().saveUserId(userDetails.uid);
       SharedPreferenceHelper().saveUserDisplayName(userDetails.displayName);
       SharedPreferenceHelper().saveUserProfilePicUrl(userDetails.photoURL);
+
+      Map<String, dynamic> userInfoMap = {
+        "email": userDetails.email,
+        "username": userDetails.email.replaceAll("@gmail.com", ""),
+        "name": userDetails.displayName,
+        // "userId": userDetails.uid,
+        "profileUrl": userDetails.photoURL
+      };
+
+      DatabaseMethods()
+          .addUserInfoToDB(userDetails.uid, userInfoMap)
+          .then((value) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => HomePage()));
+      });
     }
   }
 }

@@ -42,6 +42,7 @@ android {
         applicationId "com.example.flutter_chat_firebase_2"
         minSdkVersion 16
         targetSdkVersion 29
+        multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -67,5 +68,9 @@ dependencies {
     // Add the dependency for the Firebase SDK for Google Analytics
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics'
+
+    // dex error fix
+    def multidex_version = "2.0.1"
+    implementation "androidx.multidex:multidex:$multidex_version"
 
 }
