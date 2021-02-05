@@ -57,7 +57,7 @@ class AuthMethods {
     }
   }
 
-  signOut() async {
+  Future signOut() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
     // for google
