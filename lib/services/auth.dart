@@ -4,12 +4,14 @@ import 'package:flutter_chat_firebase_2/helperFunctions/sharedpref_helper.dart';
 import 'package:flutter_chat_firebase_2/services/database.dart';
 import 'package:flutter_chat_firebase_2/views/home_page.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthMethods {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
-  getCurrentUser() {
-    return auth.currentUser;
+  getCurrentUser() async {
+    final user = auth.currentUser;
+    return user;
   }
 
   signInWithGoogle(BuildContext context) async {
@@ -53,5 +55,16 @@ class AuthMethods {
             context, MaterialPageRoute(builder: (context) => HomePage()));
       });
     }
+  }
+
+  signOut() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    // for google
+    final googleSignIn = GoogleSignIn();
+    await googleSignIn.signOut();
+    // for firebase
+    await auth.signOut();
+    print('Signed out successfully');
   }
 }
