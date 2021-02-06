@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_firebase_2/services/auth.dart';
 import 'package:flutter_chat_firebase_2/services/database.dart';
+import 'package:flutter_chat_firebase_2/views/chat_screen.dart';
 import 'package:flutter_chat_firebase_2/views/sign_in.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,13 +28,47 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Custom ListTile for chat list
-  // Widget searchUserListTile(String profileUrl, name, email) {
-  //   return Row(
-  //     children: [
-  //       Image.network(profileUrl),
-  //     ],
-  //   );
-  // }
+  Widget searchUserListTile({String profileUrl, name, email, username}) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreen(
+              name: name,
+              chatWithUserName: username,
+            ),
+          ),
+        );
+      },
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: Image.network(
+              profileUrl,
+              height: 50,
+              width: 50,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(fontWeight: FontWeight.w800),
+                ),
+                Text("Email: $email"),
+                Text("User Name: $username"),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   // Custom stream widget for users
   Widget searchUsersList() {
@@ -46,12 +81,12 @@ class _HomePageState extends State<HomePage> {
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   DocumentSnapshot ds = snapshot.data.docs[index];
-                  // return searchListUserTile(
-                  //     profileUrl: ds["imgUrl"],
-                  //     name: ds["name"],
-                  //     email: ds["email"],
-                  //     username: ds["username"]);
-                  return Image.network(ds["profileUrl"]);
+                  return searchUserListTile(
+                      profileUrl: ds["profileUrl"],
+                      name: ds["name"],
+                      email: ds["email"],
+                      username: ds["username"]);
+                  // return Image.network(ds["profileUrl"]);
                 },
               )
             : Center(
