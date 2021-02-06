@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_chat_firebase_2/helperFunctions/sharedpref_helper.dart';
 
 class DatabaseMethods {
   // Add user to Firestore database
@@ -64,6 +65,16 @@ class DatabaseMethods {
         .collection("chats")
         .orderBy("ts", descending: true)
         // .orderBy("ts")
+        .snapshots();
+  }
+
+  // Get Chatroom List
+  getChatRooms() async {
+    String myUsername = await SharedPreferenceHelper().getUserName();
+    return FirebaseFirestore.instance
+        .collection("chatrooms")
+        .orderBy("lastMessageSendTs", descending: true)
+        .where("users", arrayContains: myUsername)
         .snapshots();
   }
 }
