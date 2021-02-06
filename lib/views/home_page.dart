@@ -5,6 +5,7 @@ import 'package:flutter_chat_firebase_2/services/auth.dart';
 import 'package:flutter_chat_firebase_2/services/database.dart';
 import 'package:flutter_chat_firebase_2/views/chat_screen.dart';
 import 'package:flutter_chat_firebase_2/views/sign_in.dart';
+import 'package:flutter_chat_firebase_2/widgets/chat_room_list_tile.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -149,8 +150,13 @@ class _HomePageState extends State<HomePage> {
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   DocumentSnapshot ds = snapshot.data.docs[index];
-                  return Text(
-                    ds.id.replaceAll(myUserName, "").replaceAll("_", ""),
+                  // return Text(
+                  //   ds.id.replaceAll(myUserName, "").replaceAll("_", ""),
+                  // );
+                  return ChatRoomListTile(
+                    lastMessage: ds["lastMessage"],
+                    myUserName: myUserName,
+                    chatRoomId: ds.id,
                   );
                 },
               )

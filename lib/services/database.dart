@@ -77,4 +77,12 @@ class DatabaseMethods {
         .where("users", arrayContains: myUsername)
         .snapshots();
   }
+
+  // Get single user info for Charoom List Tile
+  Future<QuerySnapshot> getUserInfo(String username) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .where("username", isEqualTo: username)
+        .get();
+  }
 }
