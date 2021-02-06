@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_firebase_2/helperFunctions/sharedpref_helper.dart';
 import 'package:flutter_chat_firebase_2/services/auth.dart';
 import 'package:flutter_chat_firebase_2/services/database.dart';
 import 'package:flutter_chat_firebase_2/views/chat_screen.dart';
@@ -17,6 +18,26 @@ class _HomePageState extends State<HomePage> {
 
   final searchEditingController = TextEditingController();
 
+  String myName, myProfilePic, myUserName, myEmail;
+
+  // Get Data from SharedPreferences
+  getMyInfoFromSharedPref() async {
+    myName = await SharedPreferenceHelper().getUserDisplayName();
+    myProfilePic = await SharedPreferenceHelper().getUserProfilePicUrl();
+    myUserName = await SharedPreferenceHelper().getUserName();
+    myEmail = await SharedPreferenceHelper().getUserEmail();
+  }
+
+  // Generate chatroom ID by using usernames
+  getChatRoomIdByUserNames(String a, String b) {
+    if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+      return "$b\_$a";
+    } else {
+      return "$a\_$b";
+    }
+  }
+
+  // Search Button click function
   onSearchButtonClick() async {
     setState(() {
       isSearching = true;
@@ -31,6 +52,14 @@ class _HomePageState extends State<HomePage> {
   Widget searchUserListTile({String profileUrl, name, email, username}) {
     return GestureDetector(
       onTap: () {
+        print('myname: $myUserName and partner name: $username');
+        var chatRoomId = getChatRoomIdByUserNames(myUserName, username);
+        Map<String, dynamic> chatRoomInfoMap = {
+          "users": [myUserName, username]
+        };
+
+        DatabaseMethods().createChatRoom(chatRoomId, chatRoomInfoMap);
+
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -99,6 +128,12 @@ class _HomePageState extends State<HomePage> {
   // Custom stream widget for chatrooms
   Widget chatRoomsList() {
     return Text('Chat Room');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getMyInfoFromSharedPref();
   }
 
   // Main build method

@@ -19,8 +19,9 @@ class DatabaseMethods {
   }
 
   // Adding or sending message
-  Future addMessage(String chatRoomId, messageId, Map messageInfoMap) async {
-    return FirebaseFirestore.instance
+  Future addMessage(
+      String chatRoomId, String messageId, Map messageInfoMap) async {
+    return await FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatRoomId)
         .collection("chats")
@@ -29,11 +30,29 @@ class DatabaseMethods {
   }
 
   // Update Messages in Real Time
-  updateLastMessageSend(
-      String chatRoomId, Map<String, dynamic> lastMessageInfoMap) {
+  updateLastMessageSend(String chatRoomId, Map lastMessageInfoMap) {
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatRoomId)
-        .set(lastMessageInfoMap);
+        .update(lastMessageInfoMap);
+  }
+
+  // Create Chat Room or Check/Connect if already exists
+  createChatRoom(String chatRoomId, Map chatRoomInfoMap) async {
+    final snapShot = await FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatRoomId)
+        .get();
+
+    if (snapShot.exists) {
+      // Chatroom already exists
+      return true;
+    } else {
+      // Chatroom does not exist
+      return FirebaseFirestore.instance
+          .collection("chatrooms")
+          .doc(chatRoomId)
+          .set(chatRoomInfoMap);
+    }
   }
 }

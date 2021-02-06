@@ -38,6 +38,8 @@ class AuthMethods {
       SharedPreferenceHelper().saveUserEmail(userDetails.email);
       SharedPreferenceHelper().saveUserId(userDetails.uid);
       SharedPreferenceHelper().saveUserDisplayName(userDetails.displayName);
+      SharedPreferenceHelper()
+          .saveUserName(userDetails.email.replaceAll("@gmail.com", ""));
       SharedPreferenceHelper().saveUserProfilePicUrl(userDetails.photoURL);
 
       Map<String, dynamic> userInfoMap = {

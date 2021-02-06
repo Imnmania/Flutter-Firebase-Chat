@@ -14,7 +14,8 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   //
-  String chatRoomId, messagId = "";
+  String chatRoomId = "";
+  String messageId = "";
   String myName, myProfilePic, myUserName, myEmail;
 
   var messageTextController = TextEditingController();
@@ -25,7 +26,6 @@ class _ChatScreenState extends State<ChatScreen> {
     myProfilePic = await SharedPreferenceHelper().getUserProfilePicUrl();
     myUserName = await SharedPreferenceHelper().getUserName();
     myEmail = await SharedPreferenceHelper().getUserEmail();
-
     chatRoomId = getChatRoomIdByUserNames(widget.chatWithUserName, myUserName);
   }
 
@@ -53,14 +53,14 @@ class _ChatScreenState extends State<ChatScreen> {
       };
 
       // messageId
-      if (messagId == "") {
-        messagId = randomAlphaNumeric(12);
+      if (messageId == "") {
+        messageId = randomAlphaNumeric(12);
       }
 
       DatabaseMethods()
           .addMessage(
         chatRoomId,
-        messagId,
+        messageId,
         messageInfoMap,
       )
           .then((value) {
@@ -77,7 +77,8 @@ class _ChatScreenState extends State<ChatScreen> {
           messageTextController.clear();
 
           // Make the messageId blank to regenerate next msg send
-          messagId = "";
+          messageId = "";
+          // setState(() {});
         }
       });
     }
@@ -96,6 +97,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getMyInfoFromSharedPref();
   }
 
   @override
@@ -144,11 +146,19 @@ class _ChatScreenState extends State<ChatScreen> {
                             color: Colors.white,
                           ),
                         ),
+                        onChanged: (value) {
+                          addMessage(false);
+                        },
                       ),
                     ),
-                    Icon(
-                      Icons.send,
-                      color: Colors.white.withOpacity(0.8),
+                    GestureDetector(
+                      onTap: () {
+                        addMessage(true);
+                      },
+                      child: Icon(
+                        Icons.send,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
                     ),
                   ],
                 ),
