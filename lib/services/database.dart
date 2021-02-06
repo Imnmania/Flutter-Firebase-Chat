@@ -55,4 +55,15 @@ class DatabaseMethods {
           .set(chatRoomInfoMap);
     }
   }
+
+  // Get Chatroom Messages Stream
+  Future<Stream<QuerySnapshot>> getChatRoomMessages(chatRoomId) async {
+    return FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatRoomId)
+        .collection("chats")
+        .orderBy("ts", descending: true)
+        // .orderBy("ts")
+        .snapshots();
+  }
 }
