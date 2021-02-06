@@ -15,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   //
   bool isSearching = false;
   Stream usersStream;
+  Stream chatRoomsStream;
 
   final searchEditingController = TextEditingController();
 
@@ -26,6 +27,18 @@ class _HomePageState extends State<HomePage> {
     myProfilePic = await SharedPreferenceHelper().getUserProfilePicUrl();
     myUserName = await SharedPreferenceHelper().getUserName();
     myEmail = await SharedPreferenceHelper().getUserEmail();
+  }
+
+  // Get the chat room streams
+  getChatRoomList() async {
+    chatRoomsStream = await DatabaseMethods().getChatRooms();
+    setState(() {});
+  }
+
+  // we wait for sharedpref data and then get the streams
+  onScreenLoaded() async {
+    await getMyInfoFromSharedPref();
+    getChatRoomList();
   }
 
   // Generate chatroom ID by using usernames
@@ -127,13 +140,31 @@ class _HomePageState extends State<HomePage> {
 
   // Custom stream widget for chatrooms
   Widget chatRoomsList() {
-    return Text('Chat Room');
+    return StreamBuilder(
+      stream: chatRoomsStream,
+      builder: (context, snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+                shrinkWrap: true,
+                itemCount: snapshot.data.docs.length,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot ds = snapshot.data.docs[index];
+                  return Text(
+                    ds.id.replaceAll(myUserName, "").replaceAll("_", ""),
+                  );
+                },
+              )
+            : Center(
+                child: CircularProgressIndicator(),
+              );
+      },
+    );
   }
 
   @override
   void initState() {
+    onScreenLoaded();
     super.initState();
-    getMyInfoFromSharedPref();
   }
 
   // Main build method

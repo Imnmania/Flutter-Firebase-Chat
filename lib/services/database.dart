@@ -69,7 +69,7 @@ class DatabaseMethods {
   }
 
   // Get Chatroom List
-  getChatRooms() async {
+  Future<Stream<QuerySnapshot>> getChatRooms() async {
     String myUsername = await SharedPreferenceHelper().getUserName();
     return FirebaseFirestore.instance
         .collection("chatrooms")
